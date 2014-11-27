@@ -6,33 +6,24 @@ import java.util.List;
 
 public class VigenereCipher {
 
-	public static class Letter {
-		char letter;
-		int number;
+	/*
+	 * public static void main(String[] args) { List<Character> abcd =
+	 * generateABCD(); char matrix[][] = createMatrix(abcd); String key =
+	 * generateKey("abcd", "helloworld");
+	 * 
+	 * String cipherText = cipher(key, matrix, "helloworld", abcd);
+	 * 
+	 * System.out.println(cipherText);
+	 * 
+	 * String plainText = decipher(key,matrix,cipherText,abcd);
+	 * 
+	 * System.out.println(plainText);
+	 * 
+	 * }
+	 */
 
-		public Letter(char letter, int number) {
-			this.letter = letter;
-			this.number = number;
-		}
-
-	}
-
-	public static void main(String[] args) {
-		List<Character> abcd = generateABCD();		
-		char matrix[][] = createMatrix(abcd);
-		String key = generateKey("deceptive", "wearediscoveredsaveyourself");
-		
-		String cipherText = cipher(key, matrix, "wearediscoveredsaveyourself", abcd);
-		
-		System.out.println(cipherText);
-		
-		String plainText = decipher(key,matrix,cipherText,abcd);
-		
-		System.out.println(plainText);
-
-	}
-
-	public static List<Character> generateABCD() {
+	/* Método para guardar las letras del abcdario */
+	public List<Character> generateABCD() {
 		List<Character> abcd = new ArrayList<>();
 
 		abcd.add(new Character('a'));
@@ -61,12 +52,12 @@ public class VigenereCipher {
 		abcd.add(new Character('x'));
 		abcd.add(new Character('y'));
 		abcd.add(new Character('z'));
-		
+
 		return abcd;
 	}
 
 	/* Crea la matriz */
-	public static char[][] createMatrix(List<Character> abcd) {
+	public char[][] createMatrix(List<Character> abcd) {
 
 		char matrix[][] = new char[26][26];
 
@@ -78,18 +69,16 @@ public class VigenereCipher {
 				temp++;
 			}
 		}
-
 		return matrix;
-
 	}
 
 	/* Lee la llave */
-	public static String readKeyword() {
+	public String readKeyword() {
 		return "";
 	}
 
 	/* Lee el plainText */
-	public static String readPlainText() {
+	public String readPlainText() {
 		return "";
 	}
 
@@ -97,7 +86,7 @@ public class VigenereCipher {
 	 * Repite la keyword el número de letras que tenga el plaintext plaintext
 	 * mas largo que keyword
 	 */
-	public static String generateKey(String keyword, String plainText) {
+	public String generateKey(String keyword, String plainText) {
 		String key = "";
 
 		// char key[] = new char[plainText.length()];
@@ -117,41 +106,97 @@ public class VigenereCipher {
 		return key;
 	}
 
-	/*Encripta el plaintext*/
-	public static String cipher(String key, char matrix[][], String plainText, List<Character> abcd){
+	/* Encripta el plaintext */
+	public String cipher(String key, char matrix[][], String plainText,
+			List<Character> abcd) {
 		String cipherText = "";
-		
-		for(int i = 0; i < key.length(); i++){
-			cipherText += matrix[abcd.indexOf(new Character(key.charAt(i)))]
-					[abcd.indexOf(new Character(plainText.charAt(i)))];
+
+		for (int i = 0; i < key.length(); i++) {
+			cipherText += matrix[abcd.indexOf(new Character(key.charAt(i)))][abcd
+					.indexOf(new Character(plainText.charAt(i)))];
 		}
-		
+
 		return cipherText;
-		
+
 	}
-	
-	public static String decipher(String key, char matrix[][], String cipherText, List<Character> abcd){
+
+	/* Encripta el plaintext usando la matriz de numeros y regresa un long[] */
+	public long[] cipher2(long keyLong[], int matrix[][], long plaintext[]) {
+		long ciphertext[] = new long[plaintext.length];
+		int row, column;
+
+		for (int i = 0; i < ciphertext.length; i++) {
+			row = (int) keyLong[i];
+			column = (int) plaintext[i];
+			ciphertext[i] = matrix[row][column];
+		}
+
+		return ciphertext;
+	}
+
+	/* Desencripta el ciphertext */
+	public String decipher(String key, char matrix[][], String cipherText,
+			List<Character> abcd) {
 		String plainText = "";
 		int row, column;
-		
-		for(int i = 0; i < key.length(); i ++){
+
+		for (int i = 0; i < key.length(); i++) {
 			row = abcd.indexOf(new Character(key.charAt(i)));
 			column = searchArray(matrix[row], cipherText.charAt(i));
-			
+
 			plainText += abcd.get(column).charValue();
 		}
-		
+
 		return plainText;
-		
 	}
-	
-	public static int searchArray(char array[], char letter){
-		for(int i = 0; i < array.length; i++){
-			if(array[i] == letter){
+
+	/* Desencripta el plaintext usando la matriz de numeros y regresa un long[] */
+	public long[] decipher2(long keyLong[], int matrix[][], long ciphertext[]) {
+		long plaintext[] = new long[ciphertext.length];
+		int row;
+
+		for (int i = 0; i < plaintext.length; i++) {
+			row = (int) keyLong[i];
+			plaintext[i] = searchArray2(matrix[row], (int)ciphertext[i]);
+		}
+
+		return plaintext;
+	}
+
+	/* Busca un char en un char[] */
+	public int searchArray(char array[], char letter) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == letter) {
 				return i;
 			}
 		}
 		return -1;
 	}
 	
+	/* Search array*/
+	
+	/* Busca el long en el arreglo de longs */
+	public int searchArray2(int array[], int key){
+		for(int i = 0; i < array.length; i++){
+			if(array[i] == key){
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+
+	/* Crea la matriz int[256][256] */
+	public int[][] createIntMatrix() {
+		int matrix[][] = new int[256][256];
+		for (int i = 0; i < 256; i++) {
+			for (int j = 0; j < 256; j++) {
+				matrix[i][j] = (j + i) % 256;
+			}
+		}
+
+		return matrix;
+
+	}
+
 }
